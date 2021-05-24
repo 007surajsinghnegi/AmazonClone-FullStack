@@ -12,4 +12,8 @@
                border border-yellow-300 rounded-sm focus:outline-none focus:ring-1
                focus:ring-yellow-500 active:from-yellow-500 ;
     }
+
+    .h1{
+        @apply text-3xl border-b pb-4 ; 
+    }
 }
