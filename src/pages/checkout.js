@@ -5,6 +5,10 @@ import Header from "../components/Header";
 import { selectItems, selectTotal } from "../slices/basketSlice";
 import Currency from 'react-currency-formatter';
 import { session, useSession } from "next-auth/client";
+import { loadStripe } from '@stripe/stripe-js';
+import axios from "axios";
+
+const stripePromise = loadStripe(process.env.stripe_public_key);
 
 function Checkout() {
 
@@ -13,7 +17,28 @@ function Checkout() {
     const [ session ] = useSession();
 
 
-    console.log(items)
+    const createCheckoutSession = async()=>{
+
+        const stripe = await stripePromise;
+
+        // Call to backend for a checkout session
+
+        const checkoutSession = await axios.post("/api/create-checkout-session",
+        {
+            items: items, 
+            email: session.user.email,
+        })
+
+        //Redirect To Stripe Checkout
+        
+        const result = await stripe.redirectToCheckout({
+            sessionId: checkoutSession.data.id
+        })
+
+        if(result.error){
+            alert(result.error.message)
+        }
+    }
 
     return (
         <div className="bg-gray-100">
@@ -29,7 +54,7 @@ function Checkout() {
                     />
                     <div className="flex flex-col p-5 space-y-10  bg-white">
                         <h1 className="h1">
-                        {items.length===0 ? "Your Shopping Basket" : `Shopping Basket` }     
+                        {items.length===0 ? "Your Shopping Basket is Empty" : `Your Shopping Basket` }     
                         </h1>
 
                         {items.map((item,i)=>(
@@ -57,8 +82,14 @@ function Checkout() {
                                 </span>
                             </h2>
 
-                            <button disabled={!session} className={`button mt-2 ${!session && "from-gray-300 to-gray-500 border-gray-200 text-gray-300 cursor-not-allowed "}`}>
-                                { !session ? "Sign In to Checkout" : "Proceed to Checkout" }
+                            <button
+                                role="link" 
+                                onClick={createCheckoutSession}
+                                disabled={!session} 
+                                className={`button mt-2 ${
+                                    !session && "from-gray-300 to-gray-500 border-gray-200 text-gray-300 cursor-not-allowed "
+                            }`}>
+                                    { !session ? "Sign In to Checkout" : "Proceed to Checkout" }
                             </button>
                         </>
                     )}
