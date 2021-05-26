@@ -7,6 +7,7 @@ import Currency from 'react-currency-formatter';
 import { session, useSession } from "next-auth/client";
 import { loadStripe } from '@stripe/stripe-js';
 import axios from "axios";
+import { Router } from "next/router";
 
 const stripePromise = loadStripe(process.env.stripe_public_key);
 
@@ -84,7 +85,8 @@ function Checkout() {
 
                             <button
                                 role="link" 
-                                onClick={createCheckoutSession}
+                                // onClick={createCheckoutSession}
+                                onClick={()=>Router.push("/success")}
                                 disabled={!session} 
                                 className={`button mt-2 ${
                                     !session && "from-gray-300 to-gray-500 border-gray-200 text-gray-300 cursor-not-allowed "
