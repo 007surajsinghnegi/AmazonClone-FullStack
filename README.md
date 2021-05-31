@@ -22,6 +22,11 @@ Run commands
 
 3) ```yarn run dev```
 
+# Starting Stripe webhook
+ 
+1) stripe listen  --forward localhost:3000/api/webhook
+
+2) Check if the key provided matches the STRIPE_SIGNING_SECRET in env.local
 
 ### If you see the window below then you are set to build AMAZON 2.0!
 
